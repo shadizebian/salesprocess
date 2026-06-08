@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Sales Process</title>
+    <link rel="shortcut icon" href="https://uat-workspace.uat.intervu.ai/assets/logo/favicon.png">
+    <style>
+        /* Base Reset & Core Properties */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary-blue: #003955;
+            --accent-green: #37BA8D;
+            --accent-green-light: #3FB98C;
+            --bg-gray: #f0f4f8;
+            --text-dark: #2d3748;
+            --border-light: #dee2e6;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #FCFCFC; 
+            color: var(--text-dark);
+            display: flex;
+            height: 100vh; 
+            overflow: hidden;
+        }
+
+        /* Layout Framework */
+        .workspace-wrapper {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            gap: 16px; 
+        }
+
+        .navigation-panel {
+            width: 240px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+        }
+
+        .content-workspace-pane {
+            flex: 1;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Navigation Components */
+        .panel-branding {
+            padding: 3px 0;
+            text-align: center;
+            background-color: var(--primary-blue);
+            border-bottom: 1px solid lightgrey;
+        }
+
+        .panel-branding h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .panel-branding p {
+            font-size: 11px;
+            color: white;
+            margin-top: 2px;
+        }
+
+        .panel-line {
+            border: 0;
+            height: 1px;
+            background-color: #edf2f7;
+            margin-bottom: 16px;
+        }
+
+        .view-switch {
+            display: none;
+        }
+
+        .menu-item-target {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a5568;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 4px;
+            transition: all 0.15s ease;
+        }
+
+        .menu-item-target:hover {
+            background-color: #f7fafc;
+            color: #000000;
+        }
+
+        .nav-divider {
+            border: 0;
+            border-top: 1px solid #edf2f7;
+            margin: 4px 0;
+        }
+
+        /* Content Pane Layouts */
+        .pane-header-region {
+            padding: 13px 32px;
+        }
+
+        .pane-header-region h3 {
+            font-size: 18px;
+            color: var(--primary-blue);
+            font-weight: 600;
+            display: none; 
+        }
+
+        .module-body-view {
+            display: none; 
+            padding: 0 0 32px 32px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .canvas-empty-state {
+            height: 100%;
+            min-height: 250px;
+        }
+
+        .canvas-empty-state span {
+            font-size: 13px;
+            color: var(--primary-blue);
+        }
+
+        /* Functional Pure-CSS Core Workspace Logic */
+        #switch-outreach:checked ~ .navigation-panel .btn-outreach,
+        #switch-preparation:checked ~ .navigation-panel .btn-preparation,
+        #switch-demo:checked ~ .navigation-panel .btn-demo,
+        #switch-trial:checked ~ .navigation-panel .btn-trial,
+        #switch-followup:checked ~ .navigation-panel .btn-followup,
+        #switch-proposal:checked ~ .navigation-panel .btn-proposal,
+        #switch-knowledgebase:checked ~ .navigation-panel .btn-knowledgebase,
+        #switch-documentslibrary:checked ~ .navigation-panel .btn-documentslibrary,
+        #switch-10commandments:checked ~ .navigation-panel .btn-10commandments {
+            background-color: var(--primary-blue);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        #switch-outreach:checked ~ .content-workspace-pane #title-outreach,
+        #switch-preparation:checked ~ .content-workspace-pane #title-preparation,
+        #switch-demo:checked ~ .content-workspace-pane #title-demo,
+        #switch-trial:checked ~ .content-workspace-pane #title-trial,
+        #switch-followup:checked ~ .content-workspace-pane #title-followup,
+        #switch-proposal:checked ~ .content-workspace-pane #title-proposal,
+        #switch-knowledgebase:checked ~ .content-workspace-pane #title-knowledgebase,
+        #switch-documentslibrary:checked ~ .content-workspace-pane #title-documentslibrary,
+        #switch-10commandments:checked ~ .content-workspace-pane #title-10commandments { 
+            display: block; 
+        }
+
+        #switch-outreach:checked ~ .content-workspace-pane #view-outreach,
+        #switch-preparation:checked ~ .content-workspace-pane #view-preparation,
+        #switch-demo:checked ~ .content-workspace-pane #view-demo,
+        #switch-trial:checked ~ .content-workspace-pane #view-trial,
+        #switch-followup:checked ~ .content-workspace-pane #view-followup,
+        #switch-proposal:checked ~ .content-workspace-pane #view-proposal,
+        #switch-knowledgebase:checked ~ .content-workspace-pane #view-knowledgebase,
+        #switch-documentslibrary:checked ~ .content-workspace-pane #view-documentslibrary,
+        #switch-10commandments:checked ~ .content-workspace-pane #view-10commandments { 
+            display: block; 
+        }
+
+        /* Interactive Elements & Tabs System */
+        .buttons {
+            margin-top: 2px;
+        }
+
+        button {
+            margin-right: 10px;
+            padding: 4px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            background-color: #e0e0e0;
+            color: var(--primary-blue);
+        }
+
+        button.active {
+            background-color: var(--accent-green);
+            color: white;
+        }
+        
+        .tab-system {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .tab-input {
+            display: none;
+        }
+
+        .tab-label {
+            padding: 12px 24px;
+            font-weight: 600;
+            color: #555;
+            background: #f1f3f5;
+            border: 1px solid var(--border-light);
+            border-bottom: none;
+            cursor: pointer;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            margin-right: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-label:hover {
+            background: #e9ecef;
+            color: #000;
+        }
+
+        .tab-content {
+            width: 100%;
+            order: 1;
+            display: none;
+            padding: 25px;
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: 0 6px 6px 6px;
+            min-height: 200px;
+            box-sizing: border-box;
+        }
+
+        /* Optimized Attribute Selector matching all tab nodes safely */
+        input[id^="tab"]:checked + .tab-label {
+            background: #ffffff;
+            color: var(--accent-green-light);
+            border-top: 3px solid var(--accent-green-light);
+            position: relative;
+            z-index: 2;
+        }
+        
+        #tab1:checked ~ #content1, #tab2:checked ~ #content2,
+        #tab3:checked ~ #content3, #tab4:checked ~ #content4,
+        #tab5:checked ~ #content5, #tab6:checked ~ #content6,
+        #tab7:checked ~ #content7, #tab8:checked ~ #content8,
+        #tab9:checked ~ #content9, #tab10:checked ~ #content10 { 
+            display: block; 
+        }
+
+        /* Video Workspace Interface */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .player-area {
+            flex: 2;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            height: 65vh;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: #000;
+        }
+
+        .playlist-sidebar {
+            flex: 1;
+            max-width: 400px;
+            min-width: 300px;
+            border-left: 1px solid #e2eaf0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .playlist-header {
+            padding: 15px;
+            background-color: #ebf0f3;
+            font-weight: bold;
+            color: var(--primary-blue);
+            border-bottom: 1px solid #d2dce2;
+        }
+
+        .playlist-items {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .playlist-item {
+            padding: 15px;
+            border-bottom: 1px solid #ebf0f3;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .playlist-item:hover { background-color: #f0f7f4; }
+        .playlist-item.active {
+            background-color: #e6f5ef;
+            border-left: 4px solid var(--accent-green-light);
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 4px;
+        }
+
+        .item-date {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="workspace-wrapper">
+        
+        <!-- Logic Routing Elements -->
+        <input type="radio" id="switch-outreach" name="workspace-routing" class="view-switch" checked>
+        <input type="radio" id="switch-preparation" name="workspace-routing" class="view-switch">
+        <input type="radio" id="switch-demo" name="workspace-routing" class="view-switch">
+        <input type="radio" id="switch-trial" name="workspace-routing" class="view-switch">
+        <input type="radio" id="switch-followup" name="workspace-routing" class="view-switch">
+        <input type="radio" id="switch-proposal" name="workspace-routing" class="view-switch">
+        <input type="radio" id="switch-knowledgebase" name="workspace-routing" class="view-switch">
+        <input type="radio" id="switch-documentslibrary" name="workspace-routing" class="view-switch">
+        <input type="radio" id="switch-10commandments" name="workspace-routing" class="view-switch">
+
+        <!-- Navigation Drawer Container -->
+        <nav class="navigation-panel">
+            <div style="text-align: center;">
+                <img src="https://intervu.ai/assets/intervu.ai_1752587721800-BcnehdvA.jpg" width="130px" alt="Intervu Logo">
+            </div>
+                        
+            <hr class="panel-line">
+            
+            <label for="switch-outreach" class="menu-item-target btn-outreach">Outreach</label>
+            <label for="switch-preparation" class="menu-item-target btn-preparation">Preparation</label>
+            <label for="switch-demo" class="menu-item-target btn-demo">Demo</label>
+            <label for="switch-trial" class="menu-item-target btn-trial">Trial</label>
+            <label for="switch-followup" class="menu-item-target btn-followup">Follow Up</label>
+            <label for="switch-proposal" class="menu-item-target btn-proposal">Proposal</label>
+            
+            <hr class="nav-divider">
+            
+            <label for="switch-knowledgebase" class="menu-item-target btn-knowledgebase">Knowledge Base</label>
+            <label for="switch-documentslibrary" class="menu-item-target btn-documentslibrary">Documents Library</label>
+            <label for="switch-10commandments" class="menu-item-target btn-10commandments">10 Commandments of Sales</label>
+
+            <div style="flex-grow: 1;">&nbsp;</div>
+        </nav>
+
+        <!-- Main Workspace Document Frame Screen -->
+        <main class="content-workspace-pane">
+            
+            <div class="panel-branding">
+                <h2>Unified Sales Process</h2>
+                <p>Reduce Improvisation. Boost Consistency.</p>
+            </div>
+    
+            <div class="pane-header-region">
+                <h3 id="title-outreach">Outreach</h3>
+                <h3 id="title-preparation">Preparation</h3>
+                <h3 id="title-demo">Demo</h3>
+                <h3 id="title-trial">Trial</h3>
+                <h3 id="title-followup">Follow Up</h3>
+                <h3 id="title-proposal">Proposal</h3>
+                <h3 id="title-knowledgebase">Knowledge Base</h3>
+                <h3 id="title-documentslibrary">Documents Library</h3>
+                <h3 id="title-10commandments">📜 10 Commandments of Sales</h3>
+            </div>
+            
+            <hr class="panel-line" style="margin: 0 32px 24px 32px;">
+
+            <!-- Compartment View Panel: Outreach -->
+            <div id="view-outreach" class="module-body-view">
+                <div class="canvas-empty-state">
+                    <span>
+                        <table width="100%">
+                            <tr>
+                                <td width="75%" style="vertical-align: top;">
+                                
+                                    <div class="tab-system">
+                                        <input type="radio" id="tab1" name="dashboard1-tabs" class="tab-input" checked>
+                                        <label for="tab1" class="tab-label">Ideal Customer Profile (ICP)</label>
+                                        <div id="content1" class="tab-content">
+                                            <div class="empty-placeholder">                                                
+                                                If you answer "Yes" to all below questions, then proceed with the lead. Otherwise, they are not a fit.<br><br>
+                                                <table style="padding-left: 25px; width: 100%;">
+                                                    <tr>
+                                                        <td width="80%">• Is the company either a recruitment agency or has 500+ employees?</td>
+                                                        <td>
+                                                            <div class="buttons">
+                                                                <button onclick="selectProspectingButton(this)">Yes</button>
+                                                                <button onclick="selectProspectingButton(this)">No</button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>• Is the company in GCC, North America, or Latin America?</td>
+                                                        <td>
+                                                            <div class="buttons">
+                                                                <button onclick="selectProspectingButton(this)">Yes</button>
+                                                                <button onclick="selectProspectingButton(this)">No</button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>• Does the company mainly hire white-collar employees?</td>
+                                                        <td>
+                                                            <div class="buttons">
+                                                                <button onclick="selectProspectingButton(this)">Yes</button>
+                                                                <button onclick="selectProspectingButton(this)">No</button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>• Are they tech savvy? (Modern website or outdated website? Do they have ATS?) &nbsp;</td>
+                                                        <td>
+                                                            <div class="buttons">
+                                                                <button onclick="selectProspectingButton(this)">Yes</button>
+                                                                <button onclick="selectProspectingButton(this)">No</button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>• Does the person's title suggest decision-making power? (Owner, VP, Director)&nbsp;</td>
+                                                        <td>
+                                                            <div class="buttons">
+                                                                <button onclick="selectProspectingButton(this)">Yes</button>
+                                                                <button onclick="selectProspectingButton(this)">No</button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <input type="radio" id="tab2" name="dashboard1-tabs" class="tab-input">
+                                        <label for="tab2" class="tab-label">LinkedIn Outreach</label>
+                                        <div id="content2" class="tab-content">
+                                            <div class="empty-placeholder">
+                                                Search for people in your network with titles: <br>
+                                                <ul style="padding-left: 20px;">
+                                                    <li>HR</li>
+                                                    <li>Talent Acquisition </li>
+                                                    <li>Recruiter</li>
+                                                </ul>
+                                                <br>
+
+                                                Send them 5 messages on 5 different days. <br><br>
+
+                                                <b>Day 1</b><br>
+                                                Hi <span style="color: orange;"><i>[ContactName]</i></span>. I came across your profile and noticed your work around hiring and talent strategy. 
+                                                <br> 
+                                                A lot of teams I speak with are still spending significant time screening early candidates despite having an ATS. Does that resonate on your side? 
+                                                <br><br>
+                                                 
+
+                                                <b>Day 3</b><br>
+                                                Hi <span style="color: orange;"><i>[ContactName]</i></span>. In many cases, the bottleneck isn’t interviews, it’s deciding who actually gets to the interview stage. 
+                                                <br>
+                                                How are you handling that today? 
+                                                <br><br>
+
+                                                <b>Day 5</b><br>
+                                                How consistent is early candidate evaluation across your team? 
+                                                <br>
+                                                In many cases, it varies depending on the recruiter or hiring manager, which can make it challenging to maintain quality and consistency at scale. 
+                                                <br><br>
+                                                 
+                                                <b>Day 7</b><br>
+                                                If this is even partially a challenge, I can share how some teams are structuring early-stage screening to make it faster and more consistent. 
+                                                <br>
+                                                Happy to exchange notes. No pressure. 
+                                                <br><br>
+
+                                                <b>Day 9</b><br>
+                                                I’ll assume timing might not be ideal, so I won’t keep following up. 
+                                                <br>
+                                                Before I close this, quick question: Are you perfectly happy with how early candidates are screened today?<br><br>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </td>
+                                <td width="1%">&nbsp;</td>
+                                <td width="24%" style="background-color: #FCFCFC; vertical-align: top; border: 1px solid lightgrey;">
+                                    <div style="width: 100%; text-align: center; background-color: #3FB98C; padding: 3px 0; color: #fff;"><b>Points to Remember</b></div>
+                                    <br>
+                                    <div style="padding-left: 8px; padding-right: 8px;">
+                                        • Not every lead deserves a demo.<br><br>
+                                        • Good results start with good qualification.<br><br>
+                                        • Supporting Document: <a href="https://drive.google.com/file/d/1WAXeXaVpv0GQD4g0cWWkWEIJpMxV3RCZ/preview" target="_blank">OnePager</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Compartment View Panel: Preparation -->
+            <div id="view-preparation" class="module-body-view">
+                <div class="canvas-empty-state">
+                    <span>
+                        <table width="100%">
+                            <tr>
+                                <td width="75%" style="vertical-align: top;">
+                                    <div class="tab-system">
+                                        <input type="radio" id="tab3" name="dashboard2-tabs" class="tab-input" checked>
+                                        <label for="tab3" class="tab-label">Company Research</label>
+                                        <div id="content3" class="tab-content">
+                                            <div class="empty-placeholder">
+                                                Run the below prompt in your ChatGPT.<br><br>
+                                                <div style="padding-left: 30px;">
+                                                    Company Name: <span style="color: orange;"><i>[CompanyName]</i></span><br>
+                                                    SYSTEM PROMPT: Sales Discovery Intelligence Agent<br>
+                                                    You are a sales intelligence research assistant specializing in B2B company analysis for sales discovery. Your purpose is to generate structured, accurate, and actionable company briefings based strictly on publicly available information. You help sales teams understand:<br>
+                                                    •	Company size and hiring signals <br>
+                                                    •	Leadership and decision makers <br>
+                                                    •	Recruitment infrastructure (ATS/tools) <br>
+                                                    •	Recent business changes <br>
+                                                    •	Employee sentiment <br>
+                                                    •	Actionable sales angles<br> 
+                                                    ________________________________________<br>
+                                                    INPUT<br>
+                                                    The user will provide:<br>
+                                                    •	A company name, OR <br>
+                                                    •	A company website/domain <br>
+                                                    ________________________________________<br>
+                                                    OUTPUT REQUIREMENTS<br>
+                                                    You must always return a Sales Discovery Report in the exact structure below.<br>
+                                                    CRITICAL RULES<br>
+                                                    •	Only use verifiable public information. <br>
+                                                    •	Do NOT guess, assume, or infer missing facts. <br>
+                                                    •	If data is unavailable, write: “Not publicly available.” <br>
+                                                    •	Prefer the most recent data available. <br>
+                                                    •	Keep insights concise, factual, and sales-relevant. <br>
+                                                    ________________________________________<br>
+                                                    SALES DISCOVERY REPORT FORMAT<br>
+                                                    1. Company Snapshot<br>
+                                                    •	Company name: <br>
+                                                    •	Website: <br>
+                                                    •	HQ location: <br>
+                                                    •	Industry: <br>
+                                                    •	Estimated stage (startup / growth / enterprise): <br>
+                                                    ________________________________________<br>
+                                                    2. Size & Hiring Signals<br>
+                                                    •	Estimated number of employees: <br>
+                                                    •	LinkedIn employee count: <br>
+                                                    •	Active job openings on LinkedIn: <br>
+                                                    •	Active job openings on company website: <br>
+                                                    •	Hiring intensity (low / medium / high): <br>
+                                                    ________________________________________<br>
+                                                    3. Talent & ATS Intelligence<br>
+                                                    •	Applicant Tracking System (ATS) used (if identifiable): <br>
+                                                    •	Recruitment / HR tools mentioned publicly: <br>
+                                                    •	Key roles currently being hired: <br>
+                                                    ________________________________________<br>
+                                                    4. Leadership & Decision Makers<br>
+                                                    •	CEO / Founder: <br>
+                                                    •	Head of HR / Talent / People: <br>
+                                                    •	CTO / VP Engineering (if relevant): <br>
+                                                    •	Other key hiring stakeholders (names + titles): <br>
+                                                    ________________________________________<br>
+                                                    5. Recent Company Signals (last 3–6 months)<br>
+                                                    •	Funding, acquisitions, or expansions: <br>
+                                                    •	Product launches or strategic announcements: <br>
+                                                    •	Major hiring or restructuring news: <br>
+                                                    ________________________________________<br>
+                                                    6. Glassdoor & Employee Sentiment<br>
+                                                    •	Overall sentiment summary: <br>
+                                                    •	Common complaints (themes only): <br>
+                                                    •	Common positives: <br>
+                                                    •	Hiring-related friction signals: <br>
+                                                    ________________________________________<br>
+                                                    7. Sales Insights (B2B / HR Tech Focus)<br>
+                                                    •	Likely hiring or recruitment pain points: <br>
+                                                    •	Where automation or AI interviewing could help: <br>
+                                                    •	Suggested positioning angle: <br>
+                                                    •	Trigger events indicating urgency to buy: <br>
+                                                    ________________________________________<br>
+                                                    8.️ BEHAVIOR RULES<br>
+                                                    •	Be strictly factual and avoid speculation. <br>
+                                                    •	Do not hallucinate missing data. <br>
+                                                    •	Prefer recent information over outdated sources. <br>
+                                                    •	If conflicting information exists, explicitly note it. <br>
+                                                    •	Focus on actionable insights for a sales conversation, not general company research. <br>
+                                                    •	Use concise bullet points throughout.<br>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <input type="radio" id="tab4" name="dashboard2-tabs" class="tab-input">
+                                        <label for="tab4" class="tab-label">Tailored Demo</label>
+                                        <div id="content4" class="tab-content">
+                                            <div class="empty-placeholder">
+                                                Download the <a href="https://docs.google.com/presentation/d/1ur4pXh--ZtDkVb0EdioTaaTV4bR90Cow/export/pptx" target="_blank">PowerPoint pitch template</a> and apply the following changes:<br><br>
+                                                <div style="padding-left: 30px;">
+                                                    <b>Change the Logo</b><br>
+                                                    •	Slide 1<br>
+                                                    •	Slide 10<br>
+                                                    •	Slide 11<br>
+                                                    •	Slide 12<br>
+                                                    •	Slide 13<br>
+                                                    •	Slide 14
+                                                    <br><br>
+                                                    <b>Apply a Real-Life Job</b><br>
+                                                    Find a real job that the prospect is hiring for. Look at "Jobs" in their LinkedIn page, or "Careers" on their website.
+                                                    <br><br>
+                                                    <b>Replace Job Title + Job Description</b><br>
+                                                    •	Slide 10<br>
+                                                    •	Slide 18<br>
+                                                    •	Slide 19<br>
+                                                    •	Slide 20<br>
+                                                    <br>
+                                                    <b>Employee Cloning</b><br>
+                                                    •	From their LinkedIn page, find an employee who is already filling that position.<br>
+                                                    •	Add the name and picture of that employee in Employee Cloning slide (Slide 15)<br>
+                                                    <br>
+                                                    <b>ATS Integration</b><br>
+                                                    •	Find the ATS system that the client uses by going to their Careers page and looking at the URL which should show their ATS vendor, then add their ATS logo to Slide 17<br>
+                                                    •	If they don’t have an ATS, hide slide 17 and show slides 18 and 19.<br><br>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                platform-area</td>
+                                <td width="1%">&nbsp;</td>
+                                <td width="24%" style="background-color: #FCFCFC; vertical-align: top; border: 1px solid lightgrey;">
+                                    <div style="width: 100%; text-align: center; background-color: #3FB98C; padding: 3px 0; color: #fff;"><b>Points to Remember</b></div>
+                                    <br>
+                                    <div style="padding-left: 8px; padding-right: 8px;">
+                                        • The more you research about the prospect, the higher your chances to close.<br><br>
+                                        • The research should take at least 10-15 minutes.<br><br>
+                                        • Research both the company and the attendees.<br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Compartment View Panel: Demo -->
+            <div id="view-demo" class="module-body-view">
+                <div class="canvas-empty-state">
+                    <span>
+                        <table width="100%">
+                            <tr>
+                                <td width="75%" style="vertical-align: top;">
+                                    <div class="tab-system">
+                                        <input type="radio" id="tab5" name="dashboard3-tabs" class="tab-input" checked>
+                                        <label for="tab5" class="tab-label">Discovery</label>
+                                        <div id="content5" class="tab-content">
+                                            <div class="empty-placeholder">
+                                                There are 3 items you should reveal in the discovery call: Current State, Future State, and Cost of Indecision.<br><br>
+                                                <b>1) Current State</b><hr><br>
+                                                • <b>Facts</b><br>
+                                                <div style="padding-left: 25px;">
+                                                It is extremely important to have a solid understanding of the current situation before pitching anything. At a minimum, the following facts should be identified:<br>
+                                                - Hiring Volume<br>
+                                                - Current Hiring Process: Strength & Weakness<br>
+                                                - Current Recruitment Solutions: Strength & Weakness<br>
+                                                - Decision Making Process<br>
+                                                - Key factors in choosing a solution<br>
+                                                - How do they measure Success?<br>
+                                                </div>
+                                                <br>
+                                                
+                                                • <b>Problem</b><br>
+                                                <div style="padding-left: 25px;">
+                                                The prospect does not necessary know their problem. For example, they may be thinking <i>"We need more recruiters"</i>. After few discovery questions, you realize that their problem is in the process, and the issue is no longer: <i>"We need more recruiters"</i> but rather <i>"They actually need a faster and more scalable evaluation process"</i>.
+                                                <br><br>
+                                                Note that there may be more than 1 problem that the prospect is facing. Reveal all possible and related problems, and don't stick only to the first.
+                                                </div>
+                                                <br>
+                                                
+                                                • <b>Root Cause</b><br>
+                                                <div style="padding-left: 25px;">
+                                                    Understanding the root cause during discovery is critical because clients often describe the symptom they see, not the actual problem that needs solving.<br><br>
+                                                    If you only address the surface issue, you risk:<br>
+                                                    - Proposing the wrong solution<br>
+                                                    - Competing on features instead of business impact<br>
+                                                    - Solving something that doesn’t truly matter<br><br>
+                                                    
+                                                    Once the root cause is identified, the conversation becomes more strategic because the client starts seeing:<br>
+                                                    - The true cost of the problem<br>
+                                                    - The impact of inaction<br>
+                                                    - Why change is necessary now<br><br>
+                                                    The best discovery calls do not simply collect information, they help the client understand their own business problem more clearly.
+                                                </div>
+                                                <br>
+                                                
+                                                • <b>Impact</b><br>
+                                                <div style="padding-left: 25px;">
+                                                    Understanding the impact of a problem is critical in a discovery call because problems alone do not create urgency, impact does.<br><br>
+                                                    A prospect may acknowledge an issue, but if the business consequences are unclear, there is little motivation to take action. The impact is what connects the problem to measurable outcomes such as:<br>
+                                                    - Lost revenue<br>
+                                                    - Delayed growth<br>
+                                                    - Customer churn<br>
+                                                    - Operational inefficiency<br>
+                                                    - Increased costs<br><br>
+                                                    For example, “slow hiring” is just a problem statement, but when the client realizes that slow hiring is causing them to lose $24,000 each month, the conversation becomes significantly more serious and actionable. You have to clearly show them how much they are bleeding, and don't assume that they already know.
+                                                </div>
+                                                <br><br>
+                                                
+                                                <b>2) Future State</b><hr><br>
+                                                THIS IS WHAT THE CLIENT IS BUYING!! Clients don't care about the solution, the web pages, the buttons and dropdowns. They don't want a system to manage, they want CHANGE! And that change has to be a positive change and a big change.
+                                                <br><br>
+                                                A good sales person paints a picture to the prospect about the destination of the journey, and the more detailed and vivid that image is, the easier it is for the prospect to imagine and want it.<br><br>
+                                                The future state defines:<br>
+                                                - What success looks like<br>
+                                                - What the client wants to achieve<br>
+                                                - Why the change matters strategically<br><br><br>
+                                                
+                                                <b>3) Cost of Indecision</b><hr><br>
+                                                A very important step in sales is to direct the prospect's discussion from the cost of the solution to the cost of the problem. The cost of indecision creates urgency because it makes inaction financially and operationally visible.<br>
+                                                The prospect needs to realize that the money will be spent either way. They can continue paying for the problem through ongoing losses and inefficiencies, or invest a much smaller amount into solving it. Once the cost of the problem is quantified, your pricing is no longer viewed in isolation, but against the amount of money currently being lost.<br>
+                                                Once the business impact becomes clear, the “I need to think about it” hesitation often shrinks, and companies suddenly find the budget for the solution because the cost of inaction becomes harder to justify.
+                                                <br><br><br>
+                                                
+                                                <b>🎁Bonus Point: Trigger Words</b><hr><br>
+                                                A trigger word is one that a prospect repeats frequently during a conversation. Repeated words often reveal their real pain points, priorities, or frustrations.<br><br>
+                                                For example, if a prospect keeps saying “<u><b>slow</b></u>” such as “our hiring is <u><b>slow</b></u>” or “decision-making is <u><b>slow</b></u>” that word is likely emotionally important to them. Strong salespeople mirror this language later because it makes the prospect feel understood and connects the solution directly to their problem.<br><br>
+                                                These trigger words are also powerful in follow-ups and reminders. For example, here's a reminder to send: “Hi Prospect -- A <u><b>slow</b></u> hiring process isn't just frustrating, it's actively hurting your team's output. Let’s not delay resolving why your recruitment is moving so painfully <u><b>slow</b></u> compared to the rest of the market.”
+                                            </div>
+                                        </div>
+
+                                        <input type="radio" id="tab6" name="dashboard3-tabs" class="tab-input">
+                                        <label for="tab6" class="tab-label">Example of Discovery</label>
+                                        <div id="content6" class="tab-content">
+                                            <div class="empty-placeholder">
+                                                <iframe id="DiscoveryVideoPlayer" allowfullscreen allow="autoplay" style="height: 65vh;" src="https://drive.google.com/file/d/1UskgJq1FEJp0YDLZFkLC-kcxGvxoGODC/preview"></iframe>
+                                            </div>
+                                        </div>
+                                        
+                                        <input type="radio" id="tab7" name="dashboard3-tabs" class="tab-input">
+                                        <label for="tab7" class="tab-label">Minutes of Meeting</label>
+                                        <div id="content7" class="tab-content">
+                                            <div class="empty-placeholder">
+                                                <table border="1" cellspacing="0" width="100%" style="font-size: 15px; border-collapse: collapse; border-color: lightgrey;">
+                                                    <tr>
+                                                        <td colspan="2" style="text-align: center; background-color: #3FB98C; color: white; padding: 6px;">[Meeting Name]</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td width="30%" style="padding: 4px;">Date</td>
+                                                        <td style="padding: 4px;"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 4px;">Attendees</td>
+                                                        <td style="padding: 4px;"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2" style="text-align: center; background-color: #F0F0F0; height: 10px;">&nbsp;</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 4px;">Facts</td>
+                                                        <td style="padding: 4px;"> &nbsp;•<br> &nbsp;•<br> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 4px;">Problem</td>
+                                                        <td style="padding: 4px;"> &nbsp;•<br> &nbsp;•<br> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 4px;">Root Cause</td>
+                                                        <td style="padding: 4px;"> &nbsp;•<br> &nbsp;•<br> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 4px;">Impact</td>
+                                                        <td style="padding: 4px;"> &nbsp;•<br> &nbsp;•<br> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 4px;">Future State</td>
+                                                        <td style="padding: 4px;"> &nbsp;•<br> &nbsp;•<br> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 4px;">Cost of Indecision</td>
+                                                        <td style="padding: 4px;"> &nbsp;•<br> &nbsp;•<br> </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2" style="text-align: center; background-color: #F0F0F0; height: 10px;">&nbsp;</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 4px;">Action List</td>
+                                                        <td style="padding: 4px;"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding: 4px;">Other Points</td>
+                                                        <td style="padding: 4px;"></td>
+                                                    </tr>
+                                                </table>
+                                                <br><br>
+                                                <b>🎁Bonus Point: Avoid Cliché Notes</b><hr><br>
+                                                Here’s a quick reality check for your sales notes: If someone read you the minutes of a meeting you ran last month, without mentioning the client’s name or attendees, could you actually guess who the prospect was?
+                                                <br><br>
+                                                If you can’t, your notes are too cliché. Documenting a generic issue like 'Problem: Slow hiring' applies to almost any company in the market. To drive real deals forward, your meeting minutes need to capture the highly specific, unique nuances that belong to that prospect alone.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td width="1%">&nbsp;</td>
+                                <td width="24%" style="background-color: #FCFCFC; vertical-align: top; border: 1px solid lightgrey;">
+                                    <div style="width: 100%; text-align: center; background-color: #3FB98C; padding: 3px 0; color: #fff;"><b>Points to Remember</b></div>
+                                    <br>
+                                    <div style="padding-left: 8px; padding-right: 8px;">
+                                        • Do not assume that prospects actually know their problems. Countless problems lie in their blindspot.<br><br>
+                                        • Prospects trust you more when you deeply examine their problem. High-level conversations do not build trust.<br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Compartment View Panel: Trial -->
+            <div id="view-trial" class="module-body-view">
+                <div class="canvas-empty-state">
+                    <span>
+                        <table width="100%">
+                            <tr>
+                                <td width="75%" style="vertical-align: top;">
+                                    To be determined
+                                </td>
+                                <td width="1%">&nbsp;</td>
+                                <td width="24%" style="background-color: #FCFCFC; vertical-align: top; border: 1px solid lightgrey;">
+                                    <div style="width: 100%; text-align: center; background-color: #3FB98C; padding: 3px 0; color: #fff;"><b>Points to Remember</b></div>
+                                    <br>
+                                    <div style="padding-left: 8px; padding-right: 8px;">
+                                        • To be determined<br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Compartment View Panel: Follow Up -->
+            <div id="view-followup" class="module-body-view">
+                <div class="canvas-empty-state">
+                    <span>
+                        <table width="100%">
+                            <tr>
+                                <td width="75%" style="vertical-align: top;">
+                                    <b>Effective vs. Ineffective Follow Ups</b><hr><br>
+                                    Generic “just checking in” follow-ups are rarely effective because the prospect most likely already saw the previous message and chose not to respond. Repeating the same reminder without adding value usually leads to another ignored email. Effective follow-ups should introduce a new piece of information such as an industry insight, case study, hiring trend, or product update that gives the prospect a reason to re-engage. Three Follow Up emails will be sent if a prospects goes radio silent: Industry Insight, Case Study, and Exit Email.
+                                    <br><br>
+                                    Treat a 90-day silence from a prospect as a definitive boundary: the original opportunity is <u>dead</u>. Any engagement after this period requires a complete relationship reset. Because internal priorities, challenges, and personnel may have shifted on their end, and our platform has evolved with new approaches, modules, and case studies. You must initiate a brand-new round of discovery.
+                                    <br><br><br>
+                                    
+                                    <b>Follow Up 1: Industry Insight</b><hr><br>									
+                                    Hi <span style="color: orange;"><i>[First Name]</i></span>,
+                                    <br><br>
+                                    I recently came across Deloitte’s <a href="https://www.deloitte.com/us/en/insights/topics/talent/human-capital-trends.html" target="_blank">2026 Human Capital Trends</a> research and thought it was highly relevant to the discussions around AI in hiring.
+                                    <br><br>
+                                    One finding that stood out was that while nearly 60% of employees already use AI at work, only 14% of organizations feel truly effective at designing collaboration between humans and AI. Deloitte also highlighted how companies are increasingly using AI to handle repetitive recruitment tasks while recruiters focus on higher-value evaluation and decision-making.
+                                    <br><br>
+                                    What’s interesting is that the conversation is shifting from “Should we use AI in hiring?” to “How do we use it effectively while improving speed and consistency?”
+                                    <br><br>
+                                    It reminded me of some of the hiring scalability challenges we discussed previously, so I thought I’d share it with you. Happy to hear your thoughts.
+
+                                    <br><br><br>
+                                    <b>Follow Up 2: Case Study</b><hr><br>									
+                                    Hi <span style="color: orange;"><i>[First Name]</i></span>,
+                                    <br><br>
+                                    Our previous conversation regarding the friction points in high-volume hiring pipelines stayed with me. It’s an incredibly common challenge to balance speed with high-quality candidate assessment.
+                                    <br><br>
+                                    We recently published a case study detailing how we partnered with an organization facing identical scalability constraints. They shifted their initial screening to a structured, automated format, allowing recruiters to skip repetitive early-stage interviews and focus entirely on high-value human evaluation.
+                                    <br><br>
+                                    The result was a dramatic lift in their hiring velocity and a much cleaner applicant conversion rate.
+                                    <br><br>
+                                    The full breakdown is attached. I’d love to get your take on their approach specifically how they structured the initial touchpoints.
+                                    <br><br>
+                                    Let me know if you’d be open to a quick chat later this week to sync on this.
+                                    
+                                    <br><br><br>
+                                    <b>Follow Up 3: Exit Email</b><hr><br>									
+                                    Hi <span style="color: orange;"><i>[First Name]</i></span>,
+                                    <br><br>
+                                    I reached out twice with relevant info and haven't heard back, so I’m assuming your priorities have shifted or the timing isn't right for <span style="color: orange;"><i>[Prospect Company]</i></span> to optimize your recruitment velocity at the moment.
+                                    <br><br>
+                                    I was really looking forward to helping your team address the scalability challenges we discussed, especially around targeting that 45% reduction in time-to-hire.
+                                    <br><br>
+                                    If this ever becomes a high priority for your talent acquisition strategy again, you know where to find me. In the meantime, I wish you and the team the absolute best.<br><br>
+                                </td>
+                                <td width="1%">&nbsp;</td>
+                                <td width="24%" style="background-color: #FCFCFC; vertical-align: top; border: 1px solid lightgrey;">
+                                    <div style="width: 100%; text-align: center; background-color: #3FB98C; padding: 3px 0; color: #fff;"><b>Points to Remember</b></div>
+                                    <br>
+                                    <div style="padding-left: 8px; padding-right: 8px;">
+                                        • Sending multiple empty reminders will make you sound weak and desperate.<br><br>
+                                        • A good reminder brings new info to the table.<br><br>
+                                        • 90 days of silence = dead opportunity<br><br>
+                                        • Supporting Documents:<br><a href="https://drive.google.com/file/d/1h9MqagLBoaHU95nllJnIbwhqQBcYLifE/preview" target="_blank">Case Study 1</a><br><a href="https://drive.google.com/file/d/1P2g_kXOebMGWJU-fBTSX2S-ENvoWJd04/preview" target="_blank">Case Study 2</a><br><br>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Compartment View Panel: Proposal -->
+            <div id="view-proposal" class="module-body-view">
+                <div class="canvas-empty-state">
+                    <span>
+                        1) Adjust the highlighted text in the <a href="https://docs.google.com/document/d/1QDimZeWDfyRqHzhi2tpzvS2xPilHd96a/export?format=docx" target="_blank">proposal template</a><br><br>
+                        2) Do NOT share it by email right from the beginning. Schedule a call with the prospect, and go through the proposal together, read their face, answer immediate questions, and then share it by email after the call.
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Compartment View Panel: Knowledge Base (Streams Dashboard Module) -->
+            <div id="view-knowledgebase" class="module-body-view">
+                <div class="canvas-empty-state">
+                    <span>Must Read: <a href="https://drive.google.com/file/d/1bAiPAx_bLaDV8506MkAAy-g6fu7oGw-B/preview" target="_blank">Gap Selling</a></span><br><br>
+                    
+                    <div class="workspace">
+                        <div class="player-area">
+                            <iframe id="sharePointPlayer" allowfullscreen allow="autoplay"></iframe>
+                        </div>
+
+                        <div class="playlist-sidebar" style="overflow-y: auto; height: 400px;">
+                            <div class="playlist-header">Available Sessions</div>
+                            <div class="playlist-items" id="playlistContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compartment View Panel: Documents Library -->
+            <div id="view-documentslibrary" class="module-body-view">
+                <div class="canvas-empty-state">
+                    • <a href="https://drive.google.com/file/d/1WAXeXaVpv0GQD4g0cWWkWEIJpMxV3RCZ/preview" target="_blank">One Pager</a><br>
+                    • <a href="https://drive.google.com/file/d/1h9MqagLBoaHU95nllJnIbwhqQBcYLifE/preview" target="_blank">Case Study - Brand Partners</a><br>
+                    • <a href="https://drive.google.com/file/d/1P2g_kXOebMGWJU-fBTSX2S-ENvoWJd04/preview" target="_blank">Case Study - TechGenies</a><br>
+                    • <a href="https://docs.google.com/presentation/d/1ur4pXh--ZtDkVb0EdioTaaTV4bR90Cow/export/pptx" target="_blank">Pitch Template</a><br>
+                    • Trial - Success Criteria<br>
+                    • <a href="https://docs.google.com/document/d/1QDimZeWDfyRqHzhi2tpzvS2xPilHd96a/export?format=docx" target="_blank">Proposal Template</a><br>
+                    • <a href="https://drive.google.com/file/d/1Nuid5fyxTQYE3Q9XJzqYvb8sNRyvdPC8/preview" target="_blank">Pricing Structure</a><br>
+                </div>
+            </div>
+            
+            <!-- Compartment View Panel: 10 Commandments -->
+            <div id="view-10commandments" class="module-body-view">
+                <div class="canvas-empty-state">
+                    <span style="font-size: 15px; line-height: 1.6; display: block;">
+                    1) Thou shalt not step in into any meeting unprepared.<br>
+                    2) Thou shalt understand the prospect’s problem before presenting your solution.<br>
+                    3) Thou shalt not confuse activity with progress; many emails do not equal meaningful sales movement.<br>
+                    4) Thou shalt qualify opportunities early and avoid chasing deals with no urgency, authority, or fit.<br>
+                    5) Thou shalt personalize outreach and never rely on generic “just checking in” follow-ups.<br>
+                    6) Thou shalt always leave every meeting with a clearly defined next step and timeline.<br>
+                    7) Thou shalt sell business outcomes, not product features.<br>
+                    8) Thou shalt listen more than you speak; discovery creates more value than pitching.<br>
+                    9) Thou shalt document your pipeline accurately, for false forecasting deceives the entire company.<br>
+                    10) Thou shalt follow a repeatable process instead of relying on improvisation and memory.
+                    </span>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+
+    <!-- Interface Script Engines -->
+    <script>
+        function selectProspectingButton(button) {
+            const buttons = button.parentElement.querySelectorAll('button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        }
+    </script>
+    
+    <script>
+        // 1. DATA DEFINITION (Always declared first)
+        const videos = [
+            {
+                "name": "1. The Power of Discovery",
+                "date": "2026-05-27",
+                "url": "https://drive.google.com/file/d/1sLtLCu1jmXsS8wh8_QKOdx72_kf5WOdJ/preview"
+            },
+            {
+                "name": "2. Top 5 Sales Truths",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1-tsBAuOM9gP1mUqf9JhChC4mDrmNphhS/preview"
+            },
+            {
+                "name": "3. Why Customers Buy?",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/10oSzghCyDcEYowWaMX7zGnb1wKEja7Z3/preview"
+            },
+            {
+                "name": "4. Who controls the call?",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1K7JMgnuBjxJFKuSvqCXBMRy2mvr8Zlt3/preview"
+            },
+            {
+                "name": "5. Seven Psychology Rules to sell anything to anyone",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1W-7j1lj4LYFymgyYmNdD2IGyTolVJEgD/preview"
+            },
+            {
+                "name": "6. Do Not Give Your Price Away",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1aS2NLKILv2oWwQ4ZjdvI4DMWlU_wcwAH/preview"
+            },
+            {
+                "name": "7. Talk Less. Listen More.",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1xm6YbzHJWuNYYeIj2sIn0qc0IWGiW7QX/preview"
+            },
+            {
+                "name": "8. Why Emailing the Price Doesn't Work",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/18FJSVTkbjPFtnZWhOI4HpWTtDP_K0Dfe/preview"
+            },
+            {
+                "name": "9. The Importance of Listening",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1K6kZgsimDf8hUAJEoN6oAh8JYeReJUXs/preview"
+            },
+            {
+                "name": "10. Pricing without value context is just a number",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1UmoXQ6SgF78tyRyHKx6ISodh8Uckh3Gc/preview"
+            },
+            {
+                "name": "11. If the client lacks clarity of value, the price will always feel high",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1RVe4aHmfJxKghN6YmZZxRXBGvvSwUilj/preview"
+            },
+            {
+                "name": "12. Clients should talk more than the sales person",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1hLOl082m0op71GQhzHkZfd4vJFzdpmVM/preview"
+            },
+            {
+                "name": "13. Overcoming the \"What if it doesn't work out\" Objection",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1oHGuXJrLc0qta03CARhsKPxguSqllD3F/preview"
+            },
+            {
+                "name": "14. Sell feelings, not features",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1LmgUL6pgcMuU8pMDpnzecER8ZxhcHMF-/preview"
+            },
+            {
+                "name": "15. Sell outcomes, not process",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1fIKepjUDduN7FVhsw1u1XNLKomI6YD0a/preview"
+            },
+            {
+                "name": "16. The follow-up email that has nothing new to add",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1BeRhM4oW-G8SUtONPnfn-z8e2MgEfeTJ/preview"
+            },
+            {
+                "name": "17. Why prospects ghost",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1SWgHC-68oWC9Qw7syVtBiI7NtZM04aiZ/preview"
+            },
+            {
+                "name": "18. Selling a pen has nothing to do with the pen itself",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1NjsYdEau8cgVmEw9Bmw3qf7Y_5FjpOlf/preview"
+            },
+            {
+                "name": "19. How to Introduce the Price with Context",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1_XBMZO1T-XfFzAJS_BEZOWbq0PYh9XIc/preview"
+            },
+            {
+                "name": "20. Some Advices to Improve Sales",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1llZatQ4PygFvNFtWbIniaJoTDoM92sK8/preview"
+            },
+            {
+                "name": "21. Selling is Helping, not Convincing",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1QYymYm49hhYngBtAOCRPMnJMyAtJ1d0y/preview"
+            },
+            {
+                "name": "22. Steps to do when a Prospect Ghosts You",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1PnDt1ohA-e8Y0L2BLSBhve0HZw6zLaAv/preview"
+            },
+            {
+                "name": "23. Ghosting after an Interesting Call",
+                "date": "2026-05-20",
+                "url": "https://drive.google.com/file/d/1xEOtUmVkVSeYXy9H-fGDBs43KO-uy77p/preview"
+            }
+        ];
+
+        // 2. DOM ELEMENT SELECTORS
+        const streamPlayer = document.getElementById('sharePointPlayer');
+        const playlistContainer = document.getElementById('playlistContainer');
+
+        // 3. UI RENDER ENGINE
+        if (typeof videos !== 'undefined' && videos.length > 0) {
+            
+            videos.forEach((video, index) => {
+                const item = document.createElement('div');
+                item.className = 'playlist-item';
+                if (index === 0) item.classList.add('active');
+
+                item.innerHTML = `
+                    <div class="item-title">${video.name}</div>
+                    <div class="item-date">Date: ${video.date}</div>
+                `;
+
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.playlist-item').forEach(el => el.classList.remove('active'));
+                    item.classList.add('active');
+                    streamPlayer.src = video.url;
+                });
+
+                playlistContainer.appendChild(item);
+            });
+
+            // Initial auto-load anchor link selection mapping
+            streamPlayer.src = videos[0].url;
+            
+        } else {
+            console.error("The videos database array is empty or unreadable.");
+        }
+    </script>
+</body>
+</html>
